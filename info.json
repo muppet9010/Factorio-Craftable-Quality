@@ -1,0 +1,13 @@
+{
+    "name": "craftable_quality",
+    "version": "0.0.1",
+    "title": "Craftable Quality",
+    "author": "Muppet9010",
+    "contact": "",
+    "homepage": "https://github.com/muppet9010/Factorio-Craftable-Quality",
+    "factorio_version": "1.2",
+    "dependencies": [
+        "base >= 1.2.25"
+    ],
+    "description": "Change quality to be craftable on demand rather than chance based"
+}
