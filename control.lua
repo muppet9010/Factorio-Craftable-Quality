@@ -1,11 +1,18 @@
 local SpoilingItem = require("scripts.spoiling-item")
 
+---@param eventData EventData.on_script_trigger_effect
+local function OnScriptTriggerEffect(eventData)
+    if eventData.effect_id == "craftable_quality-spoilt_out_of_safe_inventory" then
+        SpoilingItem.OnSpoiltOutOfSafeInventoryScriptTriggerEvent(eventData)
+    end
+end
+
 local function CreateGlobals()
 end
 
 local function OnLoad()
     -- Any Remote Interface or Command registration calls go in here.
-    script.on_event(defines.events.on_script_trigger_effect, SpoilingItem.OnScriptTriggerEffect)
+    script.on_event(defines.events.on_script_trigger_effect, OnScriptTriggerEffect)
 end
 
 ---@param event EventData.on_runtime_mod_setting_changed|nil # nil value when called from OnStartup (on_init & on_configuration_changed)
@@ -20,6 +27,8 @@ local function OnStartup()
     OnLoad()
     OnSettingChanged(nil)
 end
+
+
 
 
 
