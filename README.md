@@ -2,25 +2,25 @@
 
 
 
-Change quality to be craftable on demand rather than chance based
+Allow quality to be craftable on demand as well as chance based.
 
 
 
 Features
 ---------
 
-- 
+-
 
 
 
 Options
 ---------
 
-- 
+-
 
 
 
 Limitations
 ---------
 
-- 
+-

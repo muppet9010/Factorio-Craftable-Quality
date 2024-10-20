@@ -7,7 +7,15 @@
     "homepage": "https://github.com/muppet9010/Factorio-Craftable-Quality",
     "factorio_version": "2.0",
     "dependencies": [
-        "base >= 2.0.0"
+        "base >= 2.0.6",
+        "quality >= 2.0.6"
     ],
-    "description": "Change quality to be craftable on demand rather than chance based"
+    "description": "Allow quality to be craftable on demand as well as chance based.",
+    "quality_required": true,
+    "space_travel_required": false,
+    "spoiling_required": false,
+    "freezing_required": false,
+    "segmented_units_required": false,
+    "expansion_shaders_required": false,
+    "rail-bridges": false
 }

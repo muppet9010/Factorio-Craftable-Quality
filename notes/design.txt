@@ -1,0 +1,1 @@
+A "conversion" recipe allows increasing quality of a specific item. Done as a smelting recipe as then the player doesn't have to bother selecting it, it just works.
