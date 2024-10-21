@@ -2,7 +2,7 @@ local SpoilingItem = require("scripts.spoiling-item")
 
 ---@param eventData EventData.on_script_trigger_effect
 local function OnScriptTriggerEffect(eventData)
-    if eventData.effect_id == "craftable_quality-spoilt_out_of_safe_inventory" then
+    if string.find(eventData.effect_id, "craftable_quality-spoilt_out_of_safe_inventory-", 0, true) ~= nil then
         SpoilingItem.OnSpoiltOutOfSafeInventoryScriptTriggerEvent(eventData)
     end
 end

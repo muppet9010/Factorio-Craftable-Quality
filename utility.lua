@@ -45,4 +45,40 @@ Utility._DeepCopy_InnerCopy = function(object, lookup_table)
     return setmetatable(new_table, getmetatable(object))
 end
 
+Utility.ErrorMessageTextColor = { r = 1, g = 0.1, b = 0.1 }
+
+--[[ Simple adhoc function not in Muppet Utils]]
+--- Print an error message.
+---@param message string
+Utility.PrintError = function(message)
+    game.print("Mod '" .. script.mod_name .. "' caused an error:", { color = Utility.ErrorMessageTextColor })
+    game.print(message, { color = Utility.ErrorMessageTextColor })
+    game.print("Report to mod author", { color = Utility.ErrorMessageTextColor })
+end
+
+--[[ Simple adhoc function not in Muppet Utils]]
+--- Make a GPS location string.
+---@param position MapPosition
+---@param surfaceId SurfaceIdentification
+---@return string
+Utility.MakeGpsString = function(position, surfaceId)
+    local surface ---@type string
+    if type(surfaceId) == "string" then
+        surface = surfaceId
+    elseif type(surfaceId) == "number" then
+        ---@cast surfaceId uint
+        local luaSurface = game.surfaces[surfaceId] ---@type LuaSurface
+        if luaSurface == nil then error("invalid surfaceId number passed to Utility.MakeGpsString(): " .. surfaceId) end
+        surface = luaSurface.name
+    elseif type(surfaceId) == "table" then
+        ---@cast surfaceId LuaSurface
+        if surfaceId.object_name ~= "LuaSurface" then error("invalid surfaceId object passed to Utility.MakeGpsString(): " .. surfaceId.object_name) end
+        surface = surfaceId.name
+    else
+        error("unhandled surfaceId passed to Utility.MakeGpsString(): " .. surfaceId)
+    end
+    local gpsString = "[gps=" .. position.x .. "," .. position.y .. "," .. surface .. "]"
+    return gpsString
+end
+
 return Utility
