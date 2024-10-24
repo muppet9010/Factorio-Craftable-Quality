@@ -1,7 +1,7 @@
 --- This returns the items needing a conversion process as they are "base" items.
 --- Any recipe that needs a base resource (ores) or ONLY fluid(s) needs one.
 
---TODO: add mod option for "Refinement Point". Options of "Minimal Processed Items" with code below. Also add an "Ore" option that just allows raw ore refinement and this would avoid all of the messyness. Also an "All Items" option to allow for every item.
+--TODO: add mod option for "Refinement Point". Options of "Minimal Processed Items" with code below. Also an "All Items" option to allow for every item.
 
 local itemNamesNeedingConversion = {} ---@type table<string, string>
 local targettedItemIngredients = {} ---@type table<string, string>

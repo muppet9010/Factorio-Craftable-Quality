@@ -11,7 +11,7 @@ Features
 
 - Lets you craft quality base items (plates, etc) from lower quality items with a 100% outcome. This lets you craft further quality items from all quality ingredients avoiding the random chance mechanics.
 - Its intended to allowing crafting those one off items when wanted and not as a full replacement to the entire quality mechanic. For example making the bulk base ingredients for quality power armors and equipment on demand.
-- The simplest use case is to use a filtered inserter to only remove the real quality item from the assembling machine and not the "conversion" item that will spoil. See Usage Notes for full details.
+- The simplest use case is to use a filtered inserter to only remove the real quality item from the Quality Refiner and not the "conversion" item that will spoil. See Usage Notes for full details.
 
 
 
@@ -38,6 +38,7 @@ Limitations
 - Any spoiling conversion items from this mod in a players inventory when in Editor mode will just be placed on the ground where they are. This can't be detected and looks the same as when an item spoils on the ground from the Factorio API notification.
 - Spoiling on belts isn't handled as it's a far more complicated situation than other scenarios. A guess would have to be made on which side of the belt the item was on when it spoilt and this would have a noticeable impact on performance. Plus I just don't think there is a real need for this given the small number of these you'd be producing.
 - I have to define each situation for when a conversion item spoils. So if you notice any items vanishing please report them as this is a situation I didn't expect a conversion item to be in when it spoils. e.g. it shouldn't be possible to have one inside a furnace at the point of spoiling, so this isn't coded for.
+- It seems that the refining machines can't have their recipes set via the circuit network due to them having a fixed ingredient quality. This looks to be a base Factorio affect.
 
 
 
