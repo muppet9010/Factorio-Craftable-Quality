@@ -45,7 +45,8 @@ Utility._DeepCopy_InnerCopy = function(object, lookup_table)
     return setmetatable(new_table, getmetatable(object))
 end
 
-Utility.ErrorMessageTextColor = { r = 1, g = 0.1, b = 0.1 }
+Utility.ErrorMessageTextColor = { r = 255, g = 45, b = 45 }
+Utility.WarningMessageTextColor = { r = 255, g = 230, b = 45 }
 
 --[[ Simple adhoc function not in Muppet Utils]]
 --- Print an error message.
@@ -54,6 +55,14 @@ Utility.PrintError = function(message)
     game.print("Mod '" .. script.mod_name .. "' caused an error:", { color = Utility.ErrorMessageTextColor })
     game.print(message, { color = Utility.ErrorMessageTextColor })
     game.print("Report to mod author", { color = Utility.ErrorMessageTextColor })
+end
+
+--[[ Simple adhoc function not in Muppet Utils]]
+--- Print a warning message.
+---@param message string
+Utility.PrintWarning = function(message)
+    game.print("Mod '" .. script.mod_name .. "' raised a warning for your consideration:", { color = Utility.WarningMessageTextColor })
+    game.print(message, { color = Utility.WarningMessageTextColor })
 end
 
 --[[ Simple adhoc function not in Muppet Utils]]
