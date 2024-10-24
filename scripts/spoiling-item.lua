@@ -16,7 +16,6 @@ SpoilingItem.OnSpoiltOutOfSafeInventoryScriptTriggerEvent = function(eventData)
     local spoiltPosition = eventData.source_position --[[@as MapPosition]]
     local itemStackToPlace = { name = qualityItemsItemName, quality = qualityItemsQualityName, count = 1 } ---@type ItemStackDefinition
 
-    -- TODO: need to handle spoiling when on undergrounds and also in splitters. Splitters will be awkward as we'd need to spoil on the input side so that any filtering logic can run. Can use LuaEntity.belt_neighbours() to help with splitters.
     if holdingEntity ~= nil then
         -- Was in an inventory of some type, but that inventory type can't handle a trigger trying to `insert` the new item into it, e.g. assembling machine output inventory slot or on a belt.
         local holdingEntityType = holdingEntity.type
@@ -31,7 +30,9 @@ SpoilingItem.OnSpoiltOutOfSafeInventoryScriptTriggerEvent = function(eventData)
             Utility.PrintWarning("Can't safely place the quality item back onto a belt after it spoils, so dropped on the ground instead. Don't put these quality conversion spoiling items on belts, wait for them to spoil into a standard quality item first: " .. Utility.MakeGpsString(spoiltPosition, eventData.surface_index))
             game.surfaces[eventData.surface_index].spill_item_stack({ position = spoiltPosition, stack = itemStackToPlace, allow_belts = false, max_radius = 100 })
         elseif "SKIP" ~= "SKIP" and holdingEntityType == "transport-belt" then
-            -- TODO: detect if the items are stacked on the belt already. And then make stacks to match, as we get separate trigger events or each item in a stack and so don't know what shape it came from.
+            -- FUTURE: detect if the items are stacked on the belt already. And then make stacks to match, as we get separate trigger events or each item in a stack and so don't know what shape it came from.
+            -- FUTURE: need to handle spoiling when on undergrounds and also in splitters. Splitters will be awkward as we'd need to spoil on the input side so that any filtering logic can run. Can use LuaEntity.belt_neighbours() to help with splitters.
+            -- FUTURE: if belt stacking has been unlocked and is in use we could add our item to an existing item if below the stack size.
             -- FAILURE: this only checks the transport lanes on the current belt entity, not across the full length of connected belts. Need to check the connected belt entities as well. Checking for side loading.
             local itemInsertedOntoBeltLane = false
             for laneIndex = 1, 2 do
@@ -39,10 +40,10 @@ SpoilingItem.OnSpoiltOutOfSafeInventoryScriptTriggerEvent = function(eventData)
                 for _, itemOnLane in pairs(lane.get_contents()) do
                     if (itemOnLane.name == qualityItemsItemName and itemOnLane.quality == qualityItemsQualityName) or (itemOnLane.name == originalItemThatSpoiltName) then
                         -- Found our desired item on this belt lanes, so add it to this belt lane in its spoilt location.
-                        local placementLaneIndexFound, placementLanePositionFound = holdingEntity.get_item_insert_specification(spoiltPosition) -- TODO: we are just ignoring what lane it found it on for now to get the position on the line. Probably a bad idea...
-                        local itemPlacedSuccessfully = lane.insert_at(placementLanePositionFound, itemStackToPlace, 1) -- TODO: Just hardcode item stack size for now.
+                        local placementLaneIndexFound, placementLanePositionFound = holdingEntity.get_item_insert_specification(spoiltPosition) -- FUTURE: we are just ignoring what lane it found it on for now to get the position on the line. Probably a bad idea...
+                        local itemPlacedSuccessfully = lane.insert_at(placementLanePositionFound, itemStackToPlace, 1)
                         if not itemPlacedSuccessfully then
-                            itemPlacedSuccessfully = lane.insert_at_back(itemStackToPlace, 1) -- TODO: Just hardcode item stack size for now.
+                            itemPlacedSuccessfully = lane.insert_at_back(itemStackToPlace, 1)
                             if itemPlacedSuccessfully then
                                 Utility.PrintWarning("Failed to place quality item on belt after spoiling in same location, so placed at end of belt instead: " .. Utility.MakeGpsString(spoiltPosition, eventData.surface_index))
                             else

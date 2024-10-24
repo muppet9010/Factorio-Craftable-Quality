@@ -9,7 +9,7 @@ Allow quality to be craftable on demand as well as chance based.
 Features
 ---------
 
-- Lets you craft quality base items (plates, etc) from normal quality items. This lets you craft further quality items from all quality ingredients avoiding the random chance mechanics.
+- Lets you craft quality base items (plates, etc) from lower quality items with a 100% outcome. This lets you craft further quality items from all quality ingredients avoiding the random chance mechanics.
 - Its intended to allowing crafting those one off items when wanted and not as a full replacement to the entire quality mechanic. For example making the bulk base ingredients for quality power armors and equipment on demand.
 - The simplest use case is to use a filtered inserter to only remove the real quality item from the assembling machine and not the "conversion" item that will spoil. See Usage Notes for full details.
 
@@ -45,3 +45,5 @@ Notes
 ---------
 
 - This was developed as a technical curiosity. It has to use the spoilage mechanic as the Factorio API currently doesn't allow recipe varying quality outputs.
+- Items are included when they're crafted from raw resources or purely from fluids. We can't filter out any redundant items when there are multiple recipes to craft them as they're only redundant if the recipes are unlocked in a specific order. For example if you start on Vulcanus then copper wire is made from only a fluid and thus needs a conversion recipe, but for a Nauvis start copper wire conversion is un-needed.
+- It will try and handle changes made by other mods, but may fail in places. Please do let me know of any failures, but equally I might just get bored and not handle them.

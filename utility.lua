@@ -13,6 +13,19 @@ Utility.GetValueAndUnitFromString = function(text)
     return string_match(text, "%d+%.?%d*"), string_match(text, "%a+")
 end
 
+--[[ Simple adhoc function not in Muppet Utils]]
+--- Make a copy of a table's values by references. Useful for making reference tables to shared objects.
+---@param object table # The object to copy.
+---@return table
+Utility.CopyValuesByReference = function(object)
+    ---@cast object table<any, any>
+    local newTable = {} ---@type table<any, any>
+    for k, v in pairs(object) do
+        newTable[k] = v
+    end
+    return newTable
+end
+
 --[[    STOLEN FROM MUPPET UTILS - table-utils   --]]
 --- Copies a table and all of its children all the way down.
 --- Based on code from Factorio "__core__.lualib.util.lua", table.deepcopy().
@@ -45,6 +58,7 @@ Utility._DeepCopy_InnerCopy = function(object, lookup_table)
     return setmetatable(new_table, getmetatable(object))
 end
 
+--[[ Simple adhoc function not in Muppet Utils]]
 Utility.ErrorMessageTextColor = { r = 255, g = 45, b = 45 }
 Utility.WarningMessageTextColor = { r = 255, g = 230, b = 45 }
 
