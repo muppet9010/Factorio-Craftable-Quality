@@ -104,4 +104,48 @@ Utility.MakeGpsString = function(position, surfaceId)
     return gpsString
 end
 
+--[[ Not in Muppet Utils]]
+--- Make any Icons field (IconData array) from the simpler Icon field if present, or a copy of Icons.
+---@param icon data.FileName
+---@param iconSize data.SpriteSizeType
+---@param icons data.IconData[]
+---@return data.IconData[] icons
+Utility.MakeIconsCopyFromIconOrIcons = function(icon, iconSize, icons)
+    if icon ~= nil then
+        ---@type data.IconData[]
+        local icons = {
+            icon = icon,
+            icon_size = iconSize
+        }
+        return { icons }
+    else
+        return Utility.DeepCopy(icons)
+    end
+end
+
+--[[ Not in Muppet Utils]]
+--- Convert a Color object into a rich text usable color string.
+---@param colorObject data.Color
+---@return string colorValueCommaSeparatedString
+Utility.ColorObjectToRichTextString = function(colorObject)
+    local colorString = ""
+    for _, colorValue in pairs(colorObject) do
+        colorString = colorString .. "," .. colorValue
+    end
+    colorString = string.sub(colorString, 2)
+    return colorString
+end
+
+--[[ Not in Muppet Utils]]
+--- Get the localised name string references that this item uses as it's name. e.g. item-name.iron-plate or entity-name.pipe
+---@param itemPrototype data.ItemPrototype|data.CapsulePrototype|data.AmmoItemPrototype|data.RailPlannerPrototype
+---@return data.LocalisedString
+Utility.GetItemLocalisedNameStringReference = function(itemPrototype)
+    if itemPrototype.place_result == nil then
+        return { "item-name." .. itemPrototype.name }
+    else
+        return { "entity-name." .. itemPrototype.place_result }
+    end
+end
+
 return Utility

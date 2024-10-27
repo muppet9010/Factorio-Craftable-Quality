@@ -1,7 +1,8 @@
 local Utility = require("utility")
+local Icons = require("data-updates.icons")
 
 -- TODO: handle Factoriopedia for everything.
--- TODO: add a recycle recipe on the machines that returns 100% of ingredients to enable easily changing between them. Or some other easy way to change between different quality output machines.
+-- TODO: add a disassemble recipe on the machines that returns 100% of ingredients to enable easily changing between them. Or some other easy way to change between different quality output machines.
 -- TODO: add different tiers of machine based on quality modules and have them get productivity on outputs. Also add recipes and items for machines. Tie into core game technologies. Could use different base game assets if I can just tint them easily.
 -- TODO: tie conversion recipes into related base game item unlock techs.
 
@@ -29,19 +30,21 @@ while thisQuality ~= nil do
     thisQuality = data.raw["quality"][thisQuality.next] --[[@as data.QualityPrototype?]]
 end
 
-local itemNamesNeedingConversion = require("data-updates.Item-names-needing-conversion")
+local itemNamesNeedingConversion = require("data-updates.item-names-needing-conversion")
+local refinementRecipeTime = 10
+local slowCraftSpoilOverhead = 0.5
 
 
 ------------------------------------
 ---     Make conversion machines to increase the quality of items.
 ------------------------------------
 
----@param fromQualityName string
+---@param fromQuality data.QualityPrototype
 ---@param fromOrder int
----@param toQualityName string
+---@param toQuality data.QualityPrototype
 ---@param toOrder int
-local function CreateQualityConversionMachinesForQuality(fromQualityName, fromOrder, toQualityName, toOrder)
-    local recipeCategory = "craftable_quality-conversion_quality_from-" .. fromQualityName
+local function CreateQualityConversionMachinesForQuality(fromQuality, fromOrder, toQuality, toOrder)
+    local recipeCategory = "craftable_quality-conversion_quality_from-" .. fromQuality.name
 
     ---@type data.RecipeCategory
     local conversionSmeltingRecipeCategory = {
@@ -50,13 +53,14 @@ local function CreateQualityConversionMachinesForQuality(fromQualityName, fromOr
     }
 
     local assemblingMachineConversionPrototype = Utility.DeepCopy(data.raw["assembling-machine"]["assembling-machine-3"]) ---@type data.AssemblingMachinePrototype
-    assemblingMachineConversionPrototype.name = "craftable_quality-assembling-machine-conversion_quality_from-" .. fromQualityName
-    assemblingMachineConversionPrototype.localised_name = { "entity-name.craftable_quality-assembling-machine-conversion_quality_from-QUALITY", fromQualityName, toQualityName }
-    assemblingMachineConversionPrototype.localised_description = { "entity-description.craftable_quality-assembling-machine-conversion_quality_from-QUALITY", fromQualityName, toQualityName }
+    assemblingMachineConversionPrototype.name = "craftable_quality-assembling-machine-conversion_quality_from-" .. fromQuality.name
+    assemblingMachineConversionPrototype.localised_name = { "entity-name.craftable_quality-assembling-machine-conversion_quality_from-QUALITY", { "quality-name." .. fromQuality.name }, Utility.ColorObjectToRichTextString(fromQuality.color), { "quality-name." .. toQuality.name }, Utility.ColorObjectToRichTextString(toQuality.color) }
+    assemblingMachineConversionPrototype.localised_description = { "entity-description.craftable_quality-assembling-machine-conversion_quality_from-QUALITY", { "quality-name." .. fromQuality.name }, Utility.ColorObjectToRichTextString(fromQuality.color), { "quality-name." .. toQuality.name }, Utility.ColorObjectToRichTextString(fromQuality.color) }
     assemblingMachineConversionPrototype.allowed_effects = {} -- Don't allow anything to keep it balanced to quality modules in a real machine.
     assemblingMachineConversionPrototype.module_slots = 0
+    assemblingMachineConversionPrototype.crafting_speed = 1
     assemblingMachineConversionPrototype.crafting_categories = { recipeCategory }
-    assemblingMachineConversionPrototype.fixed_quality = fromQualityName -- This seems to prevent using circuits to set recipes as a side affect.
+    assemblingMachineConversionPrototype.fixed_quality = fromQuality.name -- This seems to prevent using circuits to set recipes as a side affect.
     assemblingMachineConversionPrototype.order = "craftable_quality-assembling-machine-" .. fromOrder
 
     data:extend({
@@ -68,7 +72,7 @@ end
 -- Make machines for each quality other than the highest quality.
 for i = 1, #qualityPrototypesSortedByOrder - 1 do
     local thisQualityPrototype, nextQualityPrototype = qualityPrototypesSortedByOrder[i], qualityPrototypesSortedByOrder[i + 1]
-    CreateQualityConversionMachinesForQuality(thisQualityPrototype.name, i, nextQualityPrototype.name, i + 1)
+    CreateQualityConversionMachinesForQuality(thisQualityPrototype, i, nextQualityPrototype, i + 1)
 end
 
 
@@ -82,29 +86,32 @@ end
 local QualityCost = 10
 
 ---@param itemName string
----@param fromQualityName string
+---@param fromQuality data.QualityPrototype
 ---@param fromOrder int
----@param toQualityName string
+---@param toQuality data.QualityPrototype
 ---@param toOrder int
-local function CreateQualityRecipeForItemConversion(itemName, fromQualityName, fromOrder, toQualityName, toOrder)
+local function CreateQualityRecipeForItemConversion(itemName, fromQuality, fromOrder, toQuality, toOrder)
+    ---@type data.ItemPrototype|data.CapsulePrototype|data.AmmoItemPrototype|data.RailPlannerPrototype
     local refItemPrototype = data.raw["item"][itemName] or data.raw["capsule"][itemName] or data.raw["ammo"][itemName] or data.raw["rail-planner"][itemName]
 
     ---@type data.RecipePrototype
     local recipe = {
         type = "recipe",
-        name = "craftable_quality-" .. itemName .. "-conversion_quality_from-" .. fromQualityName .. "-spoiling_to-" .. toQualityName,
-        category = "craftable_quality-conversion_quality_from-" .. fromQualityName,
-        energy_required = 10,
+        name = "craftable_quality-" .. itemName .. "-conversion_quality_from-" .. fromQuality.name .. "-spoiling_to-" .. toQuality.name,
+        localised_name = { "recipe-name.craftable_quality-ITEM-conversion_quality_from-FROM_QUALITY-spoiling_to-TO_QUALITY", Utility.GetItemLocalisedNameStringReference(refItemPrototype), { "quality-name." .. fromQuality.name }, Utility.ColorObjectToRichTextString(fromQuality.color), { "quality-name." .. toQuality.name }, Utility.ColorObjectToRichTextString(toQuality.color) },
+        localised_description = { "recipe-description.craftable_quality-ITEM-conversion_quality_from-FROM_QUALITY-spoiling_to-TO_QUALITY", Utility.GetItemLocalisedNameStringReference(refItemPrototype), { "quality-name." .. fromQuality.name }, Utility.ColorObjectToRichTextString(fromQuality.color), { "quality-name." .. toQuality.name }, Utility.ColorObjectToRichTextString(toQuality.color) },
+        category = "craftable_quality-conversion_quality_from-" .. fromQuality.name,
+        energy_required = refinementRecipeTime,
         ingredients = { { type = "item", name = itemName, amount = QualityCost } },
         results = {
-            { type = "item", name = itemName, amount = 0 }, -- Needed so we have an output slot to insert spoilt items into via script as backup.
-            { type = "item", name = "craftable_quality-" .. itemName .. "-conversion_quality-" .. toQualityName, amount = 1 }
+            { type = "item", name = "craftable_quality-" .. itemName .. "-conversion_quality-" .. toQuality.name, amount = 1 },
+            { type = "item", name = itemName, amount = 0 } -- Needed so we have an output slot to insert spoilt items into via script as backup.
         },
-        main_product = "craftable_quality-" .. itemName .. "-conversion_quality-" .. toQualityName,
+        main_product = "", --"craftable_quality-" .. itemName .. "-conversion_quality-" .. toQuality.name,
         subgroup = "craftable_quality-" .. refItemPrototype.subgroup,
         order = refItemPrototype.order .. "-" .. fromOrder .. "-" .. toOrder,
-        hide_from_player_crafting = true -- Player can't craft them, so stop them appearing in the character item screen.
-        -- TODO: Make icon autogenerated. On top of base item icon/icons Have source ingredient quality on left, target quality on the right and an arrow from left to right. If no icon or icons are supplied we need to go to the output item to get them.
+        hide_from_player_crafting = true, -- Player can't craft them, so stop them appearing in the character item screen.
+        icons = Icons.MakeRecipeIcons(Utility.MakeIconsCopyFromIconOrIcons(refItemPrototype.icon, refItemPrototype.icon_size, refItemPrototype.icons), fromQuality, toQuality)
     }
     data:extend({ recipe })
 end
@@ -114,7 +121,7 @@ local function CreateQualityRecipesForItemConversion(itemName)
     -- Make recipes for each starting ingredient quality other than the highest quality.
     for i = 1, #qualityPrototypesSortedByOrder - 1 do
         local thisQualityPrototype, nextQualityPrototype = qualityPrototypesSortedByOrder[i], qualityPrototypesSortedByOrder[i + 1]
-        CreateQualityRecipeForItemConversion(itemName, thisQualityPrototype.name, i, nextQualityPrototype.name, i + 1)
+        CreateQualityRecipeForItemConversion(itemName, thisQualityPrototype, i, nextQualityPrototype, i + 1)
     end
 end
 
@@ -142,9 +149,9 @@ data:extend({
 })
 
 ---@param itemName string
----@param qualityName string
+---@param quality data.QualityPrototype
 ---@param order int
-local function CreateSpoilingItemPrototype(itemName, qualityName, order)
+local function CreateSpoilingItemPrototype(itemName, quality, order)
     local refItemPrototype = data.raw["item"][itemName] or data.raw["capsule"][itemName] or data.raw["ammo"][itemName] or data.raw["rail-planner"][itemName]
 
     local spoilingItemPrototype = Utility.DeepCopy(refItemPrototype) --[[@as data.ItemPrototype]]
@@ -152,12 +159,14 @@ local function CreateSpoilingItemPrototype(itemName, qualityName, order)
     if spoilingItemPrototype == nil then
         error("'" .. itemName .. "' isn't an item we can make a spoiling conversion of.")
     end
-    spoilingItemPrototype.name = "craftable_quality-" .. itemName .. "-conversion_quality-" .. qualityName
-    spoilingItemPrototype.localised_name = { "item-name.craftable_quality-ITEM-conversion_quality-QUALITY", itemName, qualityName }
-    spoilingItemPrototype.localised_description = { "item-description.craftable_quality-ITEM-conversion_quality-QUALITY", itemName, qualityName }
+    spoilingItemPrototype.name = "craftable_quality-" .. itemName .. "-conversion_quality-" .. quality.name
+    spoilingItemPrototype.localised_name = { "item-name.craftable_quality-ITEM-conversion_quality-QUALITY", Utility.GetItemLocalisedNameStringReference(refItemPrototype), { "quality-name." .. quality.name }, Utility.ColorObjectToRichTextString(quality.color) }
+    spoilingItemPrototype.localised_description = { "item-description.craftable_quality-ITEM-conversion_quality-QUALITY", Utility.GetItemLocalisedNameStringReference(refItemPrototype), { "quality-name." .. quality.name }, Utility.ColorObjectToRichTextString(quality.color) }
     spoilingItemPrototype.order = refItemPrototype.order .. "-" .. order
     spoilingItemPrototype.subgroup = "craftable_quality-" .. spoilingItemPrototype.subgroup
-    spoilingItemPrototype.spoil_ticks = 120 -- Must be greater than recipe craft time as start of recipe crafting is when the timer begins. Also must allow time to be moved to a container to spoil safely. 120 seemed a good value from testing for this.
+    spoilingItemPrototype.icons = Icons.MakeQualityLabelledIcons(Utility.MakeIconsCopyFromIconOrIcons(refItemPrototype.icon, refItemPrototype.icon_size, refItemPrototype.icons), quality)
+    spoilingItemPrototype.hidden_in_factoriopedia = true
+    spoilingItemPrototype.spoil_ticks = math.ceil(refinementRecipeTime * 60 * slowCraftSpoilOverhead) -- Must be greater than recipe craft time as start of recipe crafting is when the timer begins.
     spoilingItemPrototype.spoil_to_trigger_result = {
         items_per_trigger = 1,
         trigger = {
@@ -181,7 +190,7 @@ local function CreateSpoilingItemPrototype(itemName, qualityName, order)
                                         {
                                             type = "insert-item",
                                             item = itemName,
-                                            quality = qualityName,
+                                            quality = quality.name,
                                             count = 1
                                         },
                                         --[[{
@@ -206,7 +215,7 @@ local function CreateSpoilingItemPrototype(itemName, qualityName, order)
                                     source_effects = {
                                         {
                                             type = "script",
-                                            effect_id = "craftable_quality-spoilt_out_of_safe_inventory-" .. itemName .. "-conversion_quality-" .. qualityName
+                                            effect_id = "craftable_quality-spoilt_out_of_safe_inventory-" .. itemName .. "-conversion_quality-" .. quality.name
                                         }
                                     }
                                 }
@@ -285,7 +294,7 @@ local function CreateSpoilingItemPrototypesForItemName(itemName)
     -- Make items for each output item.
     for i = 2, #qualityPrototypesSortedByOrder do
         local thisQualityPrototype = qualityPrototypesSortedByOrder[i]
-        CreateSpoilingItemPrototype(itemName, thisQualityPrototype.name, i)
+        CreateSpoilingItemPrototype(itemName, thisQualityPrototype, i)
     end
 end
 

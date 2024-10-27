@@ -1,5 +1,8 @@
 local SpoilingItem = require("scripts.spoiling-item")
 
+-- TODO: add button to enable machine recipe reset.
+-- TODO: add label in recipe selection screen to warn about setting the ingredient quality to the right option.
+
 ---@param eventData EventData.on_script_trigger_effect
 local function OnScriptTriggerEffect(eventData)
     if string.find(eventData.effect_id, "craftable_quality-spoilt_out_of_safe_inventory-", 0, true) ~= nil then
