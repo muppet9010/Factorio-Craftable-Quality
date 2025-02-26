@@ -1,1 +1,1 @@
-this folder is ignored by the _deployMe.bat script
+Make a way to be able to convert x of item into a better version of it for everything. e.g. 25 normal crushers to 1 uncommon crusher.

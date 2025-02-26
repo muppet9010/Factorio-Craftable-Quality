@@ -1,7 +1,6 @@
 local Utility = require("utility")
 local Icons = require("data-updates.icons")
 
--- TODO: handle Factoriopedia for everything.
 -- TODO: add a disassemble recipe on the machines that returns 100% of ingredients to enable easily changing between them. Or some other easy way to change between different quality output machines.
 -- TODO: add different tiers of machine based on quality modules and have them get productivity on outputs. Also add recipes and items for machines. Tie into core game technologies. Could use different base game assets if I can just tint them easily.
 -- TODO: tie conversion recipes into related base game item unlock techs.

@@ -10,7 +10,7 @@ Features
 ---------
 
 - Lets you craft quality base items (plates, etc) from lower quality items with a 100% outcome. This lets you craft further quality items from all quality ingredients avoiding the random chance mechanics.
-- Its intended to allowing crafting those one off items when wanted and not as a full replacement to the entire quality mechanic. For example making the bulk base ingredients for quality power armors and equipment on demand.
+- It's intended to allow crafting those one off items when wanted and not as a full replacement to the entire quality mechanic. For example to make the bulk base ingredients for quality power armors and personal equipment on demand.
 - The simplest use case is to use a filtered inserter to only remove the real quality item from the Quality Refiner and not the "conversion" item that will spoil. See Usage Notes for full details.
 
 
@@ -19,7 +19,7 @@ Usage Notes
 ---------
 
 - The mod has to use the item spoilage mechanic. This means the crafted "conversion" items take a few seconds to change into the real quality items. For example going from the conversion "uncommon iron plate" item to a real "iron plate" of uncommon quality item. The recipe used has output inventory slots in the machines for both the conversion and real items. So the best setup is is to just use filtered inserters to only remove the real items from the machines.
-- This spoilage process is best done by putting the conversion items into a chest and then only taking them out once they are the real item. When the items spoil in a chest or other inventory (player, car, etc) the conversion to the real item has near 0 performance impact on the game.
+- This spoilage process is best done by putting the conversion items into a chest and then only taking them out once they are the real item. When the items spoil in a chest or other inventory (player, car, etc) the conversion to the real item has 0 performance impact on the game.
 - The mod supports the conversion items spoiling in assembling machines, inserters hands, robots and on the ground. This does use a little game performance though.
 - The mod doesn't handle the conversion items spoiling on belts. So a warning message is shown in-game and the item is placed on the ground should this occur. This is due to complexity and performance reasons.
 

@@ -1,7 +1,7 @@
 local SpoilingItem = require("scripts.spoiling-item")
 
 -- TODO: add button to enable machine recipe reset.
--- TODO: add label in recipe selection screen to warn about setting the ingredient quality to the right option.
+-- TODO: add label in recipe selection screen to warn about setting the ingredient quality to the right option for the machine. See if I can do this on the machine being built or the user opening the recipe selection GUI.
 
 ---@param eventData EventData.on_script_trigger_effect
 local function OnScriptTriggerEffect(eventData)
